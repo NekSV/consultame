@@ -1,11 +1,7 @@
 import { Button, Card, Surface } from "react-native-paper";
-import {
-  StyleSheet,
-  Dimensions,
-  TouchableHighlight,
-} from "react-native";
+import { StyleSheet, Dimensions, TouchableHighlight } from "react-native";
 import React, { useState } from "react";
-import DropDown from "react-native-paper-dropdown";
+import { GenderComponent } from "./gender.component";
 
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
@@ -20,26 +16,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const genderList = [
-  {
-    label: "Masculino",
-    value: "masculino",
-  },
-  {
-    label: "Femenino",
-    value: "femenino",
-  },
-  {
-    label: "Otro",
-    value: "Otro",
-  },
-];
-
 export const SensoComponent = () => {
   const [greet, setGreet] = useState(true);
-  const [showDropDown, setShowDropDown] = useState(false);
   const [gender, setGender] = useState("");
-
   if (greet) {
     return (
       <Card style={styles.box}>
@@ -61,18 +40,7 @@ export const SensoComponent = () => {
   } else {
     return (
       <Surface style={styles.box}>
-        <TouchableHighlight onFocus={() => setShowDropDown(true)}>
-          <DropDown
-            label={"Genero"}
-            mode={"outlined"}
-            visible={showDropDown}
-            showDropDown={() => setShowDropDown(true)}
-            onDismiss={() => setShowDropDown(false)}
-            value={gender}
-            setValue={setGender}
-            list={genderList}
-          />
-        </TouchableHighlight>
+        <GenderComponent gender={gender} setGender={setGender} />
       </Surface>
     );
   }
