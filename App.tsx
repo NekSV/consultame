@@ -1,28 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import * as Application from 'expo-application';
-import { SensoComponent } from './components';
+import { StatusBar } from "expo-status-bar";
+import React, { useEffect, useState } from "react";
+import * as Application from "expo-application";
+import { SensoComponent } from "./components";
+import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: "green",
+    accent: "yellow",
+  },
+};
 export default function App() {
   const [id, setId] = useState("");
   useEffect(() => {
-    Application.getInstallationTimeAsync().then(value => setId(value.toUTCString()))
-  })
+    Application.getInstallationTimeAsync().then((value) =>
+      setId(value.toUTCString())
+    );
+  });
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app! {id}</Text>
+    <PaperProvider theme={theme}>
       <SensoComponent />
       <StatusBar style="auto" />
-    </View>
+    </PaperProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
