@@ -2,7 +2,6 @@ import { Button, Card, Surface } from "react-native-paper";
 import {
   StyleSheet,
   Dimensions,
-  SafeAreaView,
   TouchableHighlight,
 } from "react-native";
 import React, { useState } from "react";
