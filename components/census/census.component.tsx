@@ -1,19 +1,25 @@
-import { Button, Card, Surface } from "react-native-paper";
+import {
+  Button,
+  Card,
+  Divider,
+  Headline,
+  Subheading,
+  Surface,
+} from "react-native-paper";
 import { StyleSheet, Dimensions } from "react-native";
 import React, { useEffect, useState } from "react";
-import { DropDownList } from "../dropdownlist";
 import { Survey, ISurvey } from "./survey.class";
 import { genderList, ageGroupList } from "../../constants/census.constants";
 import { IQuestion, QuestionListType, QuestionList } from "./census.interface";
+import { QuestionComponent } from "../question";
 
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
   box: {
-    width: screen.width - screen.width * 0.3,
-    marginTop: screen.height * 0.33,
-    marginLeft: screen.width * 0.15,
-    paddingTop: screen.height * 0.1,
-    paddingBottom: screen.height * 0.1,
+    flex: 1,
+    justifyContent: "center",
+    padding: 8,
+    marginHorizontal: 8,
   },
   safeContainerStyle: {
     flex: 1,
@@ -26,7 +32,8 @@ const initQuestions = (
   setQuestions: React.Dispatch<
     React.SetStateAction<QuestionListType | undefined>
   >,
-  setAnswer: React.Dispatch<React.SetStateAction<ISurvey>>
+  setAnswer: React.Dispatch<React.SetStateAction<ISurvey>>,
+  next: () => void
 ) => {
   const questions = new QuestionList([
     [
@@ -34,14 +41,13 @@ const initQuestions = (
       {
         component: () => {
           return (
-            <DropDownList
-              label="Genero"
-              value={survey.gender}
-              onSelect={(_value: string) => {
-                console.log('seteando valor', _value)
-                setAnswer((current) => ({ ...current, ['gender']: _value }));
+            <QuestionComponent
+              allowedAnswers={genderList}
+              setAnswer={(value: string) => {
+                setAnswer((current) => ({ ...current, ["gender"]: value }));
+                next();
               }}
-              list={genderList}
+              statement="¿Con qué género te identificas?"
             />
           );
         },
@@ -53,13 +59,13 @@ const initQuestions = (
       {
         component: () => {
           return (
-            <DropDownList
-              label="Grupo Etario"
-              value={survey.agreGroup}
-              onSelect={(_value: string) =>
-                setAnswer((current) => ({ ...current, agreGroup: _value }))
-              }
-              list={ageGroupList}
+            <QuestionComponent
+              allowedAnswers={ageGroupList}
+              setAnswer={(value: string) => {
+                setAnswer((current) => ({ ...current, ["agreGroup"]: value }));
+                next();
+              }}
+              statement="¿En qué etapa de la vida te encuentras?"
             />
           );
         },
@@ -74,43 +80,49 @@ export const SensoComponent = () => {
   const [greetings, toggleGreeting] = useState(true);
   const [survey, setSurvey] = useState<ISurvey>(new Survey());
   const [questions, setQuestions] = useState<QuestionListType>();
-  const [current, setCurrent] = useState<IQuestion>();
+  const [currentQuestion, setCurrentQuestion] = useState<IQuestion>();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const nextQuestion = () => setCurrentIndex(currentIndex + 1);
   useEffect(() => {
-    initQuestions(survey, setQuestions, setSurvey);
+    initQuestions(survey, setQuestions, setSurvey, nextQuestion);
   }, []);
   useEffect(() => {
-    setCurrent(questions?.get(0));
+    setCurrentQuestion(questions?.get(currentIndex));
   }, [questions]);
+  useEffect(() => {
+    setCurrentQuestion(questions?.get(currentIndex));
+  }, [currentIndex]);
 
   if (greetings) {
     return (
-      <Card style={styles.box}>
-        <Card.Title
-          title="Hola!"
-          subtitle="Ayudanos a servirte mejor, contestando las siguientes preguntas"
-        />
-        <Card.Content>
-          <Button
-            icon="page-next-outline"
-            mode="contained"
-            onPress={() => toggleGreeting(false)}
-          >
-            Continuar
-          </Button>
-        </Card.Content>
-      </Card>
+      <Surface style={styles.box}>
+        <Headline>Hola!</Headline>
+        <Subheading>
+          Ayúdanos a servirte mejor, contestando las siguientes preguntas
+        </Subheading>
+        <Divider />
+        <Button
+          icon="page-next-outline"
+          mode="contained"
+          onPress={() => toggleGreeting(false)}
+        >
+          Continuar
+        </Button>
+      </Surface>
     );
   } else {
+    console.log("======================");
+    console.log({ ...survey });
     return (
       <>
-        <Surface style={styles.box}>{current?.component()}</Surface>
-        <Button
+        <Surface style={styles.box}>{currentQuestion?.component()}</Surface>
+        {/* <Button
           icon="page-next-outline"
           mode="contained"
           onPress={() => setCurrent(questions?.get(current?.next || -1))}
         >
           Siguiente
-        </Button>
+        </Button> */}
       </>
     );
   }
