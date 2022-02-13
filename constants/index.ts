@@ -1,1 +1,1 @@
-export * from './senso.constants';
+export * from './census.constants';

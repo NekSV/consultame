@@ -1,2 +1,2 @@
-export * from "./senso";
+export * from "./census";
 export * from "./dropdownlist";

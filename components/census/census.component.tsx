@@ -2,8 +2,9 @@ import { Button, Card, Surface } from "react-native-paper";
 import { StyleSheet, Dimensions } from "react-native";
 import React, { useEffect, useState } from "react";
 import { DropDownList } from "../dropdownlist";
-import { Encuesta } from "./encuesta";
-import { genderList, ageGroupList } from "../../constants/senso.constants";
+import { Survey, ISurvey } from "./survey.class";
+import { genderList, ageGroupList } from "../../constants/census.constants";
+import { IQuestion, QuestionListType, QuestionList } from "./census.interface";
 
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
@@ -20,72 +21,68 @@ const styles = StyleSheet.create({
   },
 });
 
-interface Pregunta {
-  component: any;
-  next: string | undefined;
-}
-
 const initQuestions = (
-  survey: Encuesta,
+  survey: ISurvey,
   setQuestions: React.Dispatch<
-    React.SetStateAction<Map<string, Pregunta> | undefined>
+    React.SetStateAction<QuestionListType | undefined>
   >,
-  setAnswer: React.Dispatch<React.SetStateAction<Encuesta>>
+  setAnswer: React.Dispatch<React.SetStateAction<ISurvey>>
 ) => {
-  const questions = new Map<string, Pregunta>([
+  const questions = new QuestionList([
     [
-      "genero",
+      0,
       {
         component: () => {
           return (
             <DropDownList
               label="Genero"
-              value={survey.genero}
-              onSelect={(genero: string) =>
-                setAnswer({ ...survey, genero: genero })
-              }
+              value={survey.gender}
+              onSelect={(_value: string) => {
+                console.log('seteando valor', _value)
+                setAnswer((current) => ({ ...current, ['gender']: _value }));
+              }}
               list={genderList}
             />
           );
         },
-        next: "etario",
+        next: 1,
       },
     ],
     [
-      "etario",
+      1,
       {
         component: () => {
           return (
             <DropDownList
               label="Grupo Etario"
-              value={survey.grupoEtario}
-              onSelect={(grupo: string) =>
-                setAnswer({ ...survey, grupoEtario: grupo })
+              value={survey.agreGroup}
+              onSelect={(_value: string) =>
+                setAnswer((current) => ({ ...current, agreGroup: _value }))
               }
               list={ageGroupList}
             />
           );
         },
-        next: "edad",
+        next: 2,
       },
     ],
   ]);
-  setQuestions(new Map<string, Pregunta>(questions));
+  setQuestions(questions);
 };
 
 export const SensoComponent = () => {
-  const [greet, setGreet] = useState(true);
-  const [encuesta, setEncuesta] = useState<Encuesta>(new Encuesta());
-  const [questions, setQuestions] = useState<Map<string, Pregunta>>();
-  const [current, setCurrent] = useState<Pregunta>();
+  const [greetings, toggleGreeting] = useState(true);
+  const [survey, setSurvey] = useState<ISurvey>(new Survey());
+  const [questions, setQuestions] = useState<QuestionListType>();
+  const [current, setCurrent] = useState<IQuestion>();
   useEffect(() => {
-    initQuestions(encuesta, setQuestions, setEncuesta);
+    initQuestions(survey, setQuestions, setSurvey);
   }, []);
   useEffect(() => {
-    setCurrent(questions?.get("genero"));
-  }, [questions])
+    setCurrent(questions?.get(0));
+  }, [questions]);
 
-  if (greet) {
+  if (greetings) {
     return (
       <Card style={styles.box}>
         <Card.Title
@@ -96,7 +93,7 @@ export const SensoComponent = () => {
           <Button
             icon="page-next-outline"
             mode="contained"
-            onPress={() => setGreet(false)}
+            onPress={() => toggleGreeting(false)}
           >
             Continuar
           </Button>
@@ -107,7 +104,11 @@ export const SensoComponent = () => {
     return (
       <>
         <Surface style={styles.box}>{current?.component()}</Surface>
-        <Button icon="page-next-outline" mode="contained" onPress={() => setCurrent(questions?.get(current?.next))}>
+        <Button
+          icon="page-next-outline"
+          mode="contained"
+          onPress={() => setCurrent(questions?.get(current?.next || -1))}
+        >
           Siguiente
         </Button>
       </>
