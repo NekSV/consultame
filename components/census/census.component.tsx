@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, StyleSheet } from "react-native";
-import { Button, Divider, Surface, Text } from "react-native-paper";
+import { Dimensions, StyleSheet, Text } from "react-native";
+import { Button, Divider, Surface  } from "react-native-paper";
 import { RFValue } from "react-native-responsive-fontsize";
 import { greetingText } from "../../constants/greetings.contants";
 import { IQuestion, QuestionListType } from "./census.interface";
