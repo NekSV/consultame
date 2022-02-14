@@ -44,8 +44,8 @@ interface IQuestionComponent {
  */
 function buildButtons(allowedAnswers: Array<string>, setAnswer: SetAnswerType) {
   return allowedAnswers.map((answer: string) => (
-    <Button key={answer} mode="contained" onPress={() => setAnswer(answer)}>
-      <Text style={styles.answerOption}>{answer}</Text>
+    <Button key={`${answer}_button`} mode="contained" onPress={() => setAnswer(answer)}>
+      <Text key={`${answer}_text`}style={styles.answerOption}>{answer}</Text>
     </Button>
   ));
 }

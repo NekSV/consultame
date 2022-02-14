@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet } from "react-native";
 import { Button, Divider, Surface, Text } from "react-native-paper";
 import { RFValue } from "react-native-responsive-fontsize";
-import { ageGroupList, genderList } from "../../constants/census.constants";
-import { QuestionComponent } from "../question";
-import { IQuestion, QuestionList, QuestionListType } from "./census.interface";
-import { ISurvey, Survey } from "./survey.class";
 import { greetingText } from "../../constants/greetings.contants";
-
+import { IQuestion, QuestionListType } from "./census.interface";
+import { initQuestions } from "./init-census.component";
+import { ISurvey, Survey } from "./survey.class";
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
   box: {
@@ -35,55 +33,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const initQuestions = (
-  survey: ISurvey,
-  setQuestions: React.Dispatch<
-    React.SetStateAction<QuestionListType | undefined>
-  >,
-  setAnswer: React.Dispatch<React.SetStateAction<ISurvey>>,
-  next: () => void
-) => {
-  const questions = new QuestionList([
-    [
-      0,
-      {
-        component: () => {
-          return (
-            <QuestionComponent
-              allowedAnswers={genderList}
-              setAnswer={(value: string) => {
-                setAnswer((current) => ({ ...current, ["gender"]: value }));
-                next();
-              }}
-              statement="¿Con qué género te identificas?"
-            />
-          );
-        },
-        next: 1,
-      },
-    ],
-    [
-      1,
-      {
-        component: () => {
-          return (
-            <QuestionComponent
-              allowedAnswers={ageGroupList}
-              setAnswer={(value: string) => {
-                setAnswer((current) => ({ ...current, ["agreGroup"]: value }));
-                next();
-              }}
-              statement="¿En qué etapa de la vida te encuentras?"
-            />
-          );
-        },
-        next: 2,
-      },
-    ],
-  ]);
-  setQuestions(questions);
-};
-
 export const SensoComponent = () => {
   const [greetings, toggleGreeting] = useState(true);
   const [survey, setSurvey] = useState<ISurvey>(new Survey());
@@ -108,14 +57,20 @@ export const SensoComponent = () => {
   if (greetings) {
     return (
       <Surface style={styles.box}>
-        <Text style={styles.greeting}>{greetingText.hey}</Text>
-        <Text style={styles.legend}>{greetingText.legend}</Text>
+        <Text key="title" style={styles.greeting}>
+          {greetingText.hey}
+        </Text>
+        <Text key="subtitle" style={styles.legend}>
+          {greetingText.legend}
+        </Text>
         <Divider />
         <Button
           icon="page-next-outline"
           mode="contained"
           onPress={() => toggleGreeting(false)}
-        ><Text style={styles.next}>{greetingText.next}</Text></Button>
+        >
+          <Text style={styles.next}>{greetingText.next}</Text>
+        </Button>
       </Surface>
     );
   } else {
