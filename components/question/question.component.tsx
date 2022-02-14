@@ -1,21 +1,27 @@
 import React from "react";
-import { Button, Divider, Headline, Surface } from "react-native-paper";
-import { StyleSheet, Dimensions } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+import { Button, Divider, Surface, Text } from "react-native-paper";
+import { RFValue } from 'react-native-responsive-fontsize';
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
   container: {
-    margin: 2,
-    padding: 8,
-    elevation: 4,
+    margin: RFValue(2),
+    padding: RFValue(8),
     justifyContent: "center",
   },
   answers: {
-    padding: 10,
+    padding: RFValue(20),
     flexDirection: "row",
     justifyContent: "space-between",
   },
   statement: {
-    textAlign: "center"
+    textAlign: "center",
+    fontSize: RFValue(18),
+    padding: RFValue(20),
+  },
+  answerOption: {
+    fontSize: RFValue(12),
+    color: "white"
   }
 });
 type SetAnswerType = (value: string) => void;
@@ -39,7 +45,7 @@ interface IQuestionComponent {
 function buildButtons(allowedAnswers: Array<string>, setAnswer: SetAnswerType) {
   return allowedAnswers.map((answer: string) => (
     <Button key={answer} mode="contained" onPress={() => setAnswer(answer)}>
-      {answer}
+      <Text style={styles.answerOption}>{answer}</Text>
     </Button>
   ));
 }
@@ -57,7 +63,7 @@ export const QuestionComponent: React.FC<IQuestionComponent> = ({
 }) => {
   return (
     <Surface style={styles.container}>
-      <Headline style={styles.statement}>{statement}</Headline>
+      <Text style={styles.statement}>{statement}</Text>
       <Divider />
       <Surface style={styles.answers}>
         {buildButtons(allowedAnswers, setAnswer)}

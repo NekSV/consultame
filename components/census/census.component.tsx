@@ -13,19 +13,21 @@ const styles = StyleSheet.create({
   box: {
     flex: 1,
     justifyContent: "center",
-    padding: 8,
-    marginHorizontal: 8,
+    padding: RFValue(40),
+    marginHorizontal: RFValue(10),
     textAlign: "center",
   },
   greeting: {
     textAlign: "center",
-    margin: 8,
+    margin: RFValue(8),
     fontSize: RFValue(32),
+    padding: RFValue(5),
   },
   legend: {
     textAlign: "center",
     margin: 10,
-    fontSize: RFValue(18),
+    fontSize: RFValue(16),
+    padding: RFValue(5),
   },
   next: {
     fontSize: RFValue(14),
