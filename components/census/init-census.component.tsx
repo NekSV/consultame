@@ -10,7 +10,7 @@ export const initQuestions = (
     React.SetStateAction<QuestionListType | undefined>
   >,
   setAnswer: React.Dispatch<React.SetStateAction<ISurvey>>,
-  next: () => void
+  next: (val: number) => void
 ) => {
   const questions = new QuestionList([
     [
@@ -22,7 +22,7 @@ export const initQuestions = (
               allowedAnswers={genderList}
               setAnswer={(value: string) => {
                 setAnswer((current) => ({ ...current, ["gender"]: value }));
-                next();
+                next(1);
               }}
               statement="¿Con qué género te identificas?"
             />
@@ -39,8 +39,8 @@ export const initQuestions = (
             <QuestionComponent
               allowedAnswers={ageGroupList}
               setAnswer={(value: string) => {
-                setAnswer((current) => ({ ...current, ["agreGroup"]: value }));
-                next();
+                setAnswer((current) => ({ ...current, ["ageGroup"]: value }));
+                next(2);
               }}
               statement="¿En qué etapa de la vida te encuentras?"
             />

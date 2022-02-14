@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text } from "react-native";
-import { Button, Divider, Surface  } from "react-native-paper";
+import { Button, Divider, Surface } from "react-native-paper";
 import { RFValue } from "react-native-responsive-fontsize";
-import { greetingText } from "../../constants/greetings.contants";
+import { greetingText } from "../../constants";
+import { ThankYouComponent } from "../thank-you";
 import { IQuestion, QuestionListType } from "./census.interface";
 import { initQuestions } from "./init-census.component";
 import { ISurvey, Survey } from "./survey.class";
@@ -38,9 +39,9 @@ export const SensoComponent = () => {
   const [survey, setSurvey] = useState<ISurvey>(new Survey());
   const [questions, setQuestions] = useState<QuestionListType>();
   const [currentQuestion, setCurrentQuestion] = useState<IQuestion>();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   // Quick jump to the next question, don't rely on strings that just makes its too difficult.
-  const nextQuestion = () => setCurrentIndex(currentIndex + 1);
+  const nextQuestion = (next: number) => setCurrentIndex(next);
   // On Document ready, initialize the list of available questions for the survey
   useEffect(() => {
     initQuestions(survey, setQuestions, setSurvey, nextQuestion);
@@ -53,7 +54,6 @@ export const SensoComponent = () => {
   useEffect(() => {
     setCurrentQuestion(questions?.get(currentIndex));
   }, [currentIndex]);
-
   if (greetings) {
     return (
       <Surface style={styles.box}>
@@ -74,6 +74,19 @@ export const SensoComponent = () => {
       </Surface>
     );
   } else {
-    return <Surface style={styles.box}>{currentQuestion?.component()}</Surface>;
+    return (
+      <Surface style={styles.box}>
+        {currentQuestion ? (
+          currentQuestion?.component()
+        ) : (
+          <ThankYouComponent
+            callback={() => {
+              toggleGreeting(true);
+              nextQuestion(0);
+            }}
+          />
+        )}
+      </Surface>
+    );
   }
 };
