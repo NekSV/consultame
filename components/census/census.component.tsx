@@ -1,17 +1,12 @@
-import {
-  Button,
-  Card,
-  Divider,
-  Headline,
-  Subheading,
-  Surface,
-} from "react-native-paper";
-import { StyleSheet, Dimensions } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Survey, ISurvey } from "./survey.class";
-import { genderList, ageGroupList } from "../../constants/census.constants";
-import { IQuestion, QuestionListType, QuestionList } from "./census.interface";
+import { Dimensions, StyleSheet } from "react-native";
+import { Button, Divider, Surface, Text } from "react-native-paper";
+import { RFValue } from "react-native-responsive-fontsize";
+import { ageGroupList, genderList } from "../../constants/census.constants";
 import { QuestionComponent } from "../question";
+import { IQuestion, QuestionList, QuestionListType } from "./census.interface";
+import { ISurvey, Survey } from "./survey.class";
+import { greetingText } from "../../constants/greetings.contants";
 
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
@@ -20,10 +15,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 8,
     marginHorizontal: 8,
+    textAlign: "center",
   },
-  safeContainerStyle: {
-    flex: 1,
-    justifyContent: "center",
+  greeting: {
+    textAlign: "center",
+    margin: 8,
+    fontSize: RFValue(32),
+  },
+  legend: {
+    textAlign: "center",
+    margin: 10,
+    fontSize: RFValue(18),
+  },
+  next: {
+    fontSize: RFValue(14),
+    color: "white",
   },
 });
 
@@ -82,13 +88,17 @@ export const SensoComponent = () => {
   const [questions, setQuestions] = useState<QuestionListType>();
   const [currentQuestion, setCurrentQuestion] = useState<IQuestion>();
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Quick jump to the next question, don't rely on strings that just makes its too difficult.
   const nextQuestion = () => setCurrentIndex(currentIndex + 1);
+  // On Document ready, initialize the list of available questions for the survey
   useEffect(() => {
     initQuestions(survey, setQuestions, setSurvey, nextQuestion);
   }, []);
+  // Once the list of questions has been defined, quickly setup the first item to be render
   useEffect(() => {
     setCurrentQuestion(questions?.get(currentIndex));
   }, [questions]);
+  // Everytime the index change make sure to update the current question selection
   useEffect(() => {
     setCurrentQuestion(questions?.get(currentIndex));
   }, [currentIndex]);
@@ -96,34 +106,17 @@ export const SensoComponent = () => {
   if (greetings) {
     return (
       <Surface style={styles.box}>
-        <Headline>Hola!</Headline>
-        <Subheading>
-          Ayúdanos a servirte mejor, contestando las siguientes preguntas
-        </Subheading>
+        <Text style={styles.greeting}>{greetingText.hey}</Text>
+        <Text style={styles.legend}>{greetingText.legend}</Text>
         <Divider />
         <Button
           icon="page-next-outline"
           mode="contained"
           onPress={() => toggleGreeting(false)}
-        >
-          Continuar
-        </Button>
+        ><Text style={styles.next}>{greetingText.next}</Text></Button>
       </Surface>
     );
   } else {
-    console.log("======================");
-    console.log({ ...survey });
-    return (
-      <>
-        <Surface style={styles.box}>{currentQuestion?.component()}</Surface>
-        {/* <Button
-          icon="page-next-outline"
-          mode="contained"
-          onPress={() => setCurrent(questions?.get(current?.next || -1))}
-        >
-          Siguiente
-        </Button> */}
-      </>
-    );
+    return <Surface style={styles.box}>{currentQuestion?.component()}</Surface>;
   }
 };
