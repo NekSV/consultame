@@ -7,6 +7,7 @@ import { ThankYouComponent } from "../thank-you";
 import { IQuestion, QuestionListType } from "./census.interface";
 import { initQuestions } from "./init-census.component";
 import { ISurvey, Survey } from "./survey.class";
+import { firestore } from '../../config/persistence/persistence';
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
   box: {

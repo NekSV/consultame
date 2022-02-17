@@ -1,4 +1,4 @@
-import { initializeApp, getApp } from "firebase/app";
+import * as firebase from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import Constants from "expo-constants";
 const firebaseConfig = {
@@ -10,13 +10,7 @@ const firebaseConfig = {
   appId: Constants.manifest?.extra?.appId,
 };
 
-export class Persistence {
-  private readonly db;
-  constructor() {
-    initializeApp(firebaseConfig);
-    this.db = getFirestore(getApp());
-  }
-  getInstance() {
-    return this.db;
-  }
+export const firestore = () => {
+    firebase.initializeApp(firebaseConfig);
+    return getFirestore(firebase.getApp());
 }
