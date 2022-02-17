@@ -10,6 +10,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "dotenv": "^16.0.0",
     "expo": "~44.0.0",
     "expo-application": "~4.0.1",
     "expo-constants": "~13.0.1",
