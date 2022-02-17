@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const SensoComponent = () => {
+export const CensusComponent = () => {
   const [greetings, toggleGreeting] = useState(true);
   const [survey, setSurvey] = useState<ISurvey>(new Survey());
   const [questions, setQuestions] = useState<QuestionListType>();

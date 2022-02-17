@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import * as Application from "expo-application";
-import { SensoComponent } from "./components";
+import { CensusComponent } from "./components";
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 
 const theme = {
@@ -21,7 +21,7 @@ export default function App() {
   });
   return (
     <PaperProvider theme={theme}>
-      <SensoComponent />
+      <CensusComponent />
       <StatusBar style="auto" />
     </PaperProvider>
   );
