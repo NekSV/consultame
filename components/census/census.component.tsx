@@ -50,7 +50,7 @@ export const CensusComponent = () => {
   useEffect(() => {
     setCurrentQuestion(questions?.get(currentIndex));
   }, [questions]);
-  // Everytime the index change make sure to update the current question selection
+  // The index change make sure to update the current question selection
   useEffect(() => {
     setCurrentQuestion(questions?.get(currentIndex));
   }, [currentIndex]);
