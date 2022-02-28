@@ -60,7 +60,7 @@ const initSurvey = async (
             current.questions.set(question.id, { ...question, answer: answer });
             return current;
           });
-          next(question.next || FIRST_QUESTION);
+          next(question.next || "return");
         }}
       />
     );
