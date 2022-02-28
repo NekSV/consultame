@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { CensusComponent } from "./components";
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 import { initDatabase } from './config/persistence/persistence';
-import { getDeviceId } from './config/devices';
+import { getDeviceId } from './config/device';
 
 const theme = {
   ...DefaultTheme,
@@ -22,12 +22,13 @@ export default function App() {
     initDatabase();
     // Get installation ID
     const getDeviceInfo = async () => {
-      await getDeviceId(setId);
+      const id = await getDeviceId();
+      setId(id);
     }
     getDeviceInfo();
   });
   useEffect(()=> {
-    console.log(`New Device ID ${id}`);
+    console.log(`Current Device ID ${id}`);
   }, [id]);
   return (
     <PaperProvider theme={theme}>

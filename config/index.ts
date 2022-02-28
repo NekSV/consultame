@@ -1,2 +1,2 @@
 export * from './persistence';
-export * from './devices';
+export * from './device';

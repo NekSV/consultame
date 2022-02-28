@@ -1,27 +1,37 @@
 import * as Application from "expo-application";
 import * as Device from "expo-device";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
-import React from "react";
 import { getDb } from "./persistence/persistence";
-export const getDeviceId = async (
-  setId: React.Dispatch<React.SetStateAction<string>>
-) => {
+/**
+ * Get application installation ID which is unique for every device,
+ * this is a workaround since DEVICE_ID is not available for Expo CLI
+ * @returns Device Installation ID
+ */
+export const getDeviceId = async (): Promise<string> => {
   const installationTime = await Application.getInstallationTimeAsync();
-  const id = installationTime.toLocaleDateString();
+  const id = installationTime.toISOString();
   const docRef = doc(getDb(), "devices", id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
-    console.log(docSnap.data());
+    // TODO: document data might be required in a future.
+    const data = docSnap.data();
+    return docSnap.id;
   } else {
     console.log("Device ID doesn't exists, registering");
     const devicesRef = collection(getDb(), "devices");
-    const newDevice = await setDoc(doc(devicesRef, id), {
+    await setDoc(doc(devicesRef, id), {
       brand: Device.brand,
       manufacturer: Device.manufacturer,
       model: Device.modelName,
       osVersion: Device.osVersion,
       deviceName: Device.deviceName,
     });
-    console.log(newDevice)
+    return id;
   }
 };
+
+export const getAssignedSurvey = async (): Promise<string> => {
+  return new Promise<string>((resolve, reject) => {
+    setTimeout(() => resolve('hi'), 1500);
+  })
+}

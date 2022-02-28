@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { Button, Divider, Surface } from "react-native-paper";
 import { RFValue } from "react-native-responsive-fontsize";
 import { greetingText } from "../../constants";
 import { ThankYouComponent } from "../thank-you";
-import { IQuestion, QuestionListType } from "./census.interface";
-import { initQuestions } from "./init-census.component";
 import { ISurvey, Survey } from "./survey.class";
-import { firestore } from '../../config/persistence/persistence';
-const screen = Dimensions.get("screen");
+import { demographicQuestions } from "../../constants/demographic.seed";
+import { QuestionComponent } from "../question/question.component";
+import { getAssignedSurvey } from "../../config/device";
+type QuestionComponentType = JSX.Element;
+type QuestionList = Map<string, JSX.Element>;
 const styles = StyleSheet.create({
   box: {
     flex: 1,
@@ -34,27 +35,79 @@ const styles = StyleSheet.create({
     color: "white",
   },
 });
+const FIRST_QUESTION = "gender";
+
+const initSurvey = async (
+  survey: ISurvey,
+  setSurvey: React.Dispatch<React.SetStateAction<ISurvey>>,
+  next: (id: string) => void
+): Promise<QuestionList> => {
+  const organizedQuestions: QuestionList = new Map<string, JSX.Element>();
+  const { questions } = survey;
+  //extra will be used to fetch the assigned survey from firestore
+  const extra = await getAssignedSurvey();
+  for (let entry of questions.entries()) {
+    const [key, question] = entry;
+    organizedQuestions.set(
+      question.id,
+      <QuestionComponent
+        key={question.id}
+        allowedAnswers={question.allowedAnswers}
+        statement={question.statement}
+        setAnswer={(answer) => {
+          question.answer = answer;
+          setSurvey((current) => {
+            current.questions.set(question.id, { ...question, answer: answer });
+            return current;
+          });
+          next(question.next || FIRST_QUESTION);
+        }}
+      />
+    );
+  }
+  return organizedQuestions;
+};
 
 export const CensusComponent = () => {
   const [greetings, toggleGreeting] = useState(true);
   const [survey, setSurvey] = useState<ISurvey>(new Survey());
-  const [questions, setQuestions] = useState<QuestionListType>();
-  const [currentQuestion, setCurrentQuestion] = useState<IQuestion>();
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  // Quick jump to the next question, don't rely on strings that just makes its too difficult.
-  const nextQuestion = (next: number) => setCurrentIndex(next);
+  const [questions, setQuestionList] = useState<QuestionList>();
+  const [currentQuestion, setCurrentQuestion] = useState<
+    () => QuestionComponentType
+  >();
+  // Quick jump to the next question
+  const nextQuestion = (id: string) => {
+    console.log('calling next id', id);
+    console.log(questions);
+    const question = questions?.get(id)
+      ? questions?.get(id)
+      : questions?.get(FIRST_QUESTION);
+    if (question) {
+      console.log("setting question")
+      setCurrentQuestion(() => question);
+    }
+  };
   // On Document ready, initialize the list of available questions for the survey
   useEffect(() => {
-    initQuestions(survey, setQuestions, setSurvey, nextQuestion);
+    setSurvey(new Survey(demographicQuestions));
+    const getSurvey = async () => {
+      // get assigned survey
+      const data = await initSurvey(
+        new Survey(demographicQuestions),
+        setSurvey,
+        nextQuestion
+      );
+      debugger;
+      // set local question list
+      setQuestionList(data);
+      const firstQuestion = data.get(FIRST_QUESTION);
+      if (firstQuestion) {
+        setCurrentQuestion(() => firstQuestion);
+      }
+    };
+    getSurvey();
   }, []);
-  // Once the list of questions has been defined, quickly setup the first item to be render
-  useEffect(() => {
-    setCurrentQuestion(questions?.get(currentIndex));
-  }, [questions]);
-  // The index change make sure to update the current question selection
-  useEffect(() => {
-    setCurrentQuestion(questions?.get(currentIndex));
-  }, [currentIndex]);
+
   if (greetings) {
     return (
       <Surface style={styles.box}>
@@ -68,7 +121,10 @@ export const CensusComponent = () => {
         <Button
           icon="page-next-outline"
           mode="contained"
-          onPress={() => toggleGreeting(false)}
+          onPress={() => {
+            console.log("pressing");
+            toggleGreeting(false);
+          }}
         >
           <Text style={styles.next}>{greetingText.next}</Text>
         </Button>
@@ -78,12 +134,12 @@ export const CensusComponent = () => {
     return (
       <Surface style={styles.box}>
         {currentQuestion ? (
-          currentQuestion?.component()
+          currentQuestion
         ) : (
           <ThankYouComponent
             callback={() => {
               toggleGreeting(true);
-              nextQuestion(0);
+              nextQuestion(FIRST_QUESTION);
             }}
           />
         )}

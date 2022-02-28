@@ -51,7 +51,7 @@ function buildButtons(allowedAnswers: Array<string>, setAnswer: SetAnswerType) {
 }
 
 /**
- * Indivual Question Component
+ * Individual Question Component
  * @param props {IQuestionComponent} Individual Question Values
  * @returns {JSX.Element} Question Container
  */
