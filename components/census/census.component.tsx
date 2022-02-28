@@ -65,31 +65,28 @@ const initSurvey = async (
       />
     );
   }
-  return organizedQuestions;
+  return new Promise((resolve, reject) => {
+    resolve(organizedQuestions);
+  });
 };
 
 export const CensusComponent = () => {
   const [greetings, toggleGreeting] = useState(true);
   const [survey, setSurvey] = useState<ISurvey>(new Survey());
-  const [questions, setQuestionList] = useState<QuestionList>();
-  const [currentQuestion, setCurrentQuestion] = useState<
-    () => QuestionComponentType
-  >();
+  const [questionList, setQuestionList] = useState<QuestionList>();
+  const [currentQuestion, setCurrentQuestion] =
+    useState<() => QuestionComponentType | undefined>();
+  const [currentId, setCurrentId] = useState(FIRST_QUESTION);
   // Quick jump to the next question
   const nextQuestion = (id: string) => {
-    console.log('calling next id', id);
-    console.log(questions);
-    const question = questions?.get(id)
-      ? questions?.get(id)
-      : questions?.get(FIRST_QUESTION);
-    if (question) {
-      console.log("setting question")
-      setCurrentQuestion(() => question);
-    }
+    setCurrentId(id);
   };
+  useEffect(() => {
+    setCurrentQuestion(() => questionList?.get(currentId));
+  }, [currentId]);
   // On Document ready, initialize the list of available questions for the survey
   useEffect(() => {
-    setSurvey(new Survey(demographicQuestions));
+    //setSurvey(new Survey(demographicQuestions));
     const getSurvey = async () => {
       // get assigned survey
       const data = await initSurvey(
@@ -97,16 +94,18 @@ export const CensusComponent = () => {
         setSurvey,
         nextQuestion
       );
-      debugger;
       // set local question list
       setQuestionList(data);
-      const firstQuestion = data.get(FIRST_QUESTION);
-      if (firstQuestion) {
-        setCurrentQuestion(() => firstQuestion);
-      }
     };
-    getSurvey();
+    if (!questionList) getSurvey();
   }, []);
+  useEffect(() => {
+    console.log("passing here just once");
+    const firstQuestion = questionList?.get(FIRST_QUESTION);
+    if (firstQuestion) {
+      setCurrentQuestion(() => firstQuestion);
+    }
+  }, [questionList]);
 
   if (greetings) {
     return (
@@ -122,7 +121,6 @@ export const CensusComponent = () => {
           icon="page-next-outline"
           mode="contained"
           onPress={() => {
-            console.log("pressing");
             toggleGreeting(false);
           }}
         >
