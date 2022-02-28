@@ -1,7 +1,7 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text } from "react-native";
-import { Button, Divider, Surface  } from "react-native-paper";
-import { RFValue } from 'react-native-responsive-fontsize';
+import { Button, Divider, Surface } from "react-native-paper";
+import { RFValue } from "react-native-responsive-fontsize";
 const screen = Dimensions.get("screen");
 const styles = StyleSheet.create({
   container: {
@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   answers: {
     padding: RFValue(20),
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "space-between",
   },
   statement: {
@@ -21,8 +22,11 @@ const styles = StyleSheet.create({
   },
   answerOption: {
     fontSize: RFValue(12),
-    color: "white"
-  }
+    color: "white",
+  },
+  spacer: {
+    margin: RFValue(3),
+  },
 });
 type SetAnswerType = (value: string) => void;
 /**
@@ -44,8 +48,15 @@ interface IQuestionComponent {
  */
 function buildButtons(allowedAnswers: Array<string>, setAnswer: SetAnswerType) {
   return allowedAnswers.map((answer: string) => (
-    <Button key={`${answer}_button`} mode="contained" onPress={() => setAnswer(answer)}>
-      <Text key={`${answer}_text`}style={styles.answerOption}>{answer}</Text>
+    <Button
+      key={`${answer}_button`}
+      mode="contained"
+      onPress={() => setAnswer(answer)}
+      style={styles.spacer}
+    >
+      <Text key={`${answer}_text`} style={styles.answerOption}>
+        {answer}
+      </Text>
     </Button>
   ));
 }

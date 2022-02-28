@@ -1,5 +1,5 @@
 import { ISurveyQuestion } from "../components/census/survey.class";
-import { genderList, ageGroupList } from "./census.constants";
+import { genderList, ageGroupList, zoneList } from "./census.constants";
 
 export const demographicQuestions: Array<ISurveyQuestion> = [
   {
@@ -14,12 +14,12 @@ export const demographicQuestions: Array<ISurveyQuestion> = [
     allowedAnswers: ageGroupList,
     statement: "¿En qué etapa de la vida te encuentras?",
     answer: ageGroupList[0],
-    next: "schoolLevel",
+    next: "zone",
   },
   {
-    id: "schoolLevel",
-    allowedAnswers: ageGroupList,
-    statement: "¿Escuela?",
-    answer: ageGroupList[0],
+    id: "zone",
+    allowedAnswers: zoneList,
+    statement: "¿Desde dónde nos visitas?",
+    answer: zoneList[0],
   },
 ];
