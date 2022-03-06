@@ -8,6 +8,7 @@ import { ISurvey, Survey } from "./survey.class";
 import { demographicQuestions } from "../../constants/demographic.seed";
 import { QuestionComponent } from "../question/question.component";
 import { getAssignedSurvey } from "../../config/device";
+import { log } from '../../config/persistence/persistence';
 type QuestionComponentType = JSX.Element;
 type QuestionList = Map<string, JSX.Element>;
 const styles = StyleSheet.create({
@@ -46,6 +47,7 @@ const initSurvey = async (
   const { questions } = survey;
   //extra will be used to fetch the assigned survey from firestore
   const extra = await getAssignedSurvey();
+  log.info(JSON.stringify(extra));
   for (let entry of questions.entries()) {
     const [key, question] = entry;
     organizedQuestions.set(
